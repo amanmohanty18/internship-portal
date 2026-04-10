@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | InternHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo mb-1">🎯 InternHub</div>
+      <div class="auth-title">Create Account 🚀</div>
+      <div class="auth-subtitle">Join thousands of students and companies</div>
+
+      <div id="errorMsg" class="alert alert-danger d-none py-2 small"></div>
+      <div id="successMsg" class="alert alert-success d-none py-2 small"></div>
+
+      <p class="form-label mb-2">I am a:</p>
+      <div class="d-flex gap-3 mb-3">
+        <div class="role-btn active flex-fill" id="studentBtn" onclick="selectRole('student')">🎓 <strong>Student</strong></div>
+        <div class="role-btn flex-fill" id="companyBtn" onclick="selectRole('company')">🏢 <strong>Company</strong></div>
+      </div>
+      <input type="hidden" id="role" value="student"/>
+
+      <div id="companyFields" class="d-none">
+        <div class="mb-3">
+          <label class="form-label">Company Website</label>
+          <input type="url" id="companyWebsite" class="form-control" placeholder="https://yourcompany.com"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">LinkedIn Page</label>
+          <input type="url" id="companyLinkedIn" class="form-control" placeholder="https://linkedin.com/company/..."/>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="name" class="form-control" placeholder="Your full name"/>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="you@example.com"/>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Min. 6 characters"/>
+      </div>
+
+      <button class="btn-auth mb-3" onclick="handleRegister()">Create Account</button>
+
+      <p class="text-center mb-0" style="font-size:0.86rem;color:var(--gray-600)">
+        Already have an account?
+        <a href="login.html" style="color:var(--primary);font-weight:700">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    redirectIfLoggedIn();
+    function selectRole(role) {
+      document.getElementById('role').value = role;
+      document.getElementById('studentBtn').classList.toggle('active', role === 'student');
+      document.getElementById('companyBtn').classList.toggle('active', role === 'company');
+      document.getElementById('companyFields').classList.toggle('d-none', role !== 'company');
+    }
+    async function handleRegister() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+      const errorMsg = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+      errorMsg.classList.add('d-none');
+      successMsg.classList.add('d-none');
+      if (!name || !email || !password) {
+        errorMsg.classList.remove('d-none');
+        errorMsg.textContent = 'Please fill in all fields';
+        return;
+      }
+      const payload = { name, email, password, role,
+        ...(role === 'company' && {
+          companyWebsite: document.getElementById('companyWebsite')?.value,
+          companyLinkedIn: document.getElementById('companyLinkedIn')?.value
+        })
+      };
+      const data = await authAPI.register(payload);
+      if (data.token) {
+        saveAuth(data);
+        successMsg.classList.remove('d-none');
+        successMsg.textContent = 'Account created! Redirecting...';
+        setTimeout(() => {
+          if (data.user.role === 'company') window.location.href = 'company-dashboard.html';
+          else window.location.href = 'index.html';
+        }, 1200);
+      } else {
+        errorMsg.classList.remove('d-none');
+        errorMsg.textContent = data.message || 'Registration failed';
+      }
+    }
+  </script>
+</body>
+</html>

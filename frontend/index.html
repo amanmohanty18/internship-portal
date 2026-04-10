@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InternHub — Find Your Dream Internship</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+  <style>
+    .custom-select-wrapper { position: relative; width: 100%; }
+    .custom-select-trigger {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 11px 36px 11px 14px;
+      font-size: 0.88rem;
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      cursor: pointer;
+      color: #475569;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.25s;
+      position: relative;
+      user-select: none;
+    }
+    .custom-select-trigger::after {
+      content: '▾';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.9rem;
+      transition: transform 0.2s;
+    }
+    .custom-select-trigger.open { border-color: #6366f1; background: white; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+    .custom-select-trigger.open::after { transform: translateY(-50%) rotate(180deg); }
+    .custom-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      z-index: 9999;
+      max-height: 260px;
+      overflow-y: auto;
+      animation: dropDown 0.15s ease;
+    }
+    .custom-dropdown.open { display: block; }
+    @keyframes dropDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    .custom-option {
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      font-family: 'Inter', sans-serif;
+      color: #334155;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .custom-option:first-child { border-radius: 8px 8px 0 0; color: #94a3b8; }
+    .custom-option:last-child { border-radius: 0 0 8px 8px; }
+    .custom-option:hover { background: #eef2ff; color: #4f46e5; }
+    .custom-option.selected { background: #eef2ff; color: #4f46e5; font-weight: 600; }
+    .custom-dropdown::-webkit-scrollbar { width: 4px; }
+    .custom-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">🎯 Intern<span>Hub</span></a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-center gap-1">
+          <li class="nav-item"><a class="nav-link" href="listings.html">Browse Internships</a></li>
+          <li class="nav-item" id="profileNav"><a class="nav-link" href="profile.html">My Profile</a></li>
+          <li class="nav-item" id="dashboardNav"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item d-none" id="companyDashboardNav"><a class="nav-link" href="company-dashboard.html">🏢 My Dashboard</a></li>
+          <li class="nav-item d-none" id="adminNav"><a class="nav-link" href="admin.html">⚙️ Admin</a></li>
+          <li class="nav-item ms-2" id="authButtons">
+            <a href="login.html" class="btn-nav-login me-2">Login</a>
+            <a href="register.html" class="btn-nav-register">Register</a>
+          </li>
+          <li class="nav-item ms-2 d-none" id="logoutBtn">
+            <button class="btn-nav-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="col-lg-8 mx-auto text-center" style="position:relative;z-index:1">
+        <div class="hero-badge">🚀 India's #1 Internship Platform</div>
+        <h1>Find Your <span>Dream Internship</span> Today</h1>
+        <p class="mt-3 mb-0">Discover thousands of internships across India. Filter by role, location, and eligibility to find the perfect match.</p>
+        <div class="search-box">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="custom-select-wrapper">
+                <div class="custom-select-trigger" id="roleDisplay" onclick="toggleDropdown('roleDropdown', this)">🔍 Select Role</div>
+                <div class="custom-dropdown" id="roleDropdown">
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','')">🔍 Select Role</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Frontend Developer Intern')">Frontend Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Backend Developer Intern')">Backend Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Full Stack Developer Intern')">Full Stack Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','React Developer Intern')">React Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Node.js Developer Intern')">Node.js Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Android Developer Intern')">Android Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','iOS Developer Intern')">iOS Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Flutter Developer Intern')">Flutter Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Mobile App Developer Intern')">Mobile App Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Data Analyst Intern')">Data Analyst Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Data Science Intern')">Data Science Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Machine Learning Intern')">Machine Learning Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','AI Intern')">AI Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Business Intelligence Intern')">Business Intelligence Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','IoT Developer Intern')">IoT Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Blockchain Developer Intern')">Blockchain Developer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Cyber Security Intern')">Cyber Security Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Cloud Computing Intern')">Cloud Computing Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','UI/UX Designer Intern')">UI/UX Designer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Graphic Designer Intern')">Graphic Designer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Product Designer Intern')">Product Designer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Marketing Intern')">Marketing Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Digital Marketing Intern')">Digital Marketing Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Content Writing Intern')">Content Writing Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','HR Intern')">HR Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Operations Intern')">Operations Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Business Development Intern')">Business Development Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Sales Intern')">Sales Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','Software Engineer Intern')">Software Engineer Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','QA Tester Intern')">QA Tester Intern</div>
+                  <div class="custom-option" onclick="selectOption('searchRole','roleDisplay','roleDropdown','DevOps Intern')">DevOps Intern</div>
+                </div>
+                <input type="hidden" id="searchRole"/>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="custom-select-wrapper">
+                <div class="custom-select-trigger" id="locationDisplay" onclick="toggleDropdown('locationDropdown', this)">📍 Select Location</div>
+                <div class="custom-dropdown" id="locationDropdown">
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','')">📍 Select Location</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Remote')">🌐 Remote</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Bangalore')">Bangalore</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Hyderabad')">Hyderabad</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Pune')">Pune</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Chennai')">Chennai</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Mumbai')">Mumbai</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Delhi')">Delhi</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Noida')">Noida</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Gurgaon')">Gurgaon</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Kolkata')">Kolkata</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Ahmedabad')">Ahmedabad</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Jaipur')">Jaipur</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Chandigarh')">Chandigarh</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Indore')">Indore</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Bhopal')">Bhopal</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Lucknow')">Lucknow</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Kanpur')">Kanpur</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Nagpur')">Nagpur</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Surat')">Surat</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Vadodara')">Vadodara</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Coimbatore')">Coimbatore</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Visakhapatnam')">Visakhapatnam</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Patna')">Patna</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Ranchi')">Ranchi</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Bhubaneswar')">Bhubaneswar</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Mysore')">Mysore</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Trivandrum')">Trivandrum</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Kochi')">Kochi</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Madurai')">Madurai</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Guwahati')">Guwahati</div>
+                  <div class="custom-option" onclick="selectOption('searchLocation','locationDisplay','locationDropdown','Dehradun')">Dehradun</div>
+                </div>
+                <input type="hidden" id="searchLocation"/>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select id="searchYear" class="form-control">
+                <option value="">🎓 Graduation Year</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+                <option value="2029">2029</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn-search" onclick="handleSearch()">Search</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-number">500+</div><div class="stat-label">Internships Listed</div></div></div>
+        <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-number">200+</div><div class="stat-label">Partner Companies</div></div></div>
+        <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-number">50+</div><div class="stat-label">Cities Covered</div></div></div>
+        <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-number">10K+</div><div class="stat-label">Students Placed</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="categories">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Browse by Category</h2>
+        <p class="section-subtitle mt-2">Explore internships in your field of interest</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=frontend"><span class="category-icon">💻</span><div class="fw-semibold">Frontend Dev</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=backend"><span class="category-icon">⚙️</span><div class="fw-semibold">Backend Dev</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=data"><span class="category-icon">📊</span><div class="fw-semibold">Data Science</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=design"><span class="category-icon">🎨</span><div class="fw-semibold">UI/UX Design</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=android"><span class="category-icon">📱</span><div class="fw-semibold">Android Dev</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=machine learning"><span class="category-icon">🤖</span><div class="fw-semibold">Machine Learning</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=devops"><span class="category-icon">☁️</span><div class="fw-semibold">DevOps</div></a></div>
+        <div class="col-6 col-md-3"><a class="category-card" href="listings.html?role=marketing"><span class="category-icon">📣</span><div class="fw-semibold">Marketing</div></a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 <strong style="color:white">InternHub</strong> — Built with ❤️ for students across India</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const user = getUser();
+    if (user) {
+      document.getElementById('authButtons').classList.add('d-none');
+      document.getElementById('logoutBtn').classList.remove('d-none');
+      if (user.role === 'admin') {
+        document.getElementById('adminNav').classList.remove('d-none');
+        document.getElementById('profileNav').classList.add('d-none');
+        document.getElementById('dashboardNav').classList.add('d-none');
+      } else if (user.role === 'company') {
+        document.getElementById('profileNav').classList.add('d-none');
+        document.getElementById('dashboardNav').classList.add('d-none');
+        document.getElementById('companyDashboardNav').classList.remove('d-none');
+      }
+    } else {
+      document.getElementById('profileNav').classList.add('d-none');
+      document.getElementById('dashboardNav').classList.add('d-none');
+    }
+    function toggleDropdown(dropdownId, trigger) {
+      const dropdown = document.getElementById(dropdownId);
+      const isOpen = dropdown.classList.contains('open');
+      // close all dropdowns first
+      document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('open'));
+      if (!isOpen) {
+        dropdown.classList.add('open');
+        trigger.classList.add('open');
+      }
+    }
+    function selectOption(inputId, displayId, dropdownId, value) {
+      document.getElementById(inputId).value = value;
+      const display = document.getElementById(displayId);
+      display.textContent = value || (inputId === 'searchRole' ? '🔍 Select Role' : '📍 Select Location');
+      document.getElementById(dropdownId).classList.remove('open');
+      display.classList.remove('open');
+      // highlight selected
+      document.querySelectorAll(`#${dropdownId} .custom-option`).forEach(o => {
+        o.classList.toggle('selected', o.textContent.trim() === value);
+      });
+    }
+    // close dropdowns when clicking outside
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.custom-select-wrapper')) {
+        document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('open'));
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('open'));
+      }
+    });
+    function handleSearch() {
+      const params = new URLSearchParams();
+      const role = document.getElementById('searchRole').value;
+      const location = document.getElementById('searchLocation').value;
+      const year = document.getElementById('searchYear').value;
+      if (role) params.append('role', role);
+      if (location) params.append('location', location);
+      if (year) params.append('graduationYear', year);
+      window.location.href = `listings.html?${params.toString()}`;
+    }
+
+  </script>
+</body>
+</html>
